@@ -14,22 +14,30 @@ export default function Welcome({ auth }) {
         <>
             <Head title="VMS Pro - Vehicle Service System" />
             
-            {/* Custom Automotive Themed Premium UI with Video Background */}
-            <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
+            {/* Custom Automotive Themed Premium UI with Video/Image Background */}
+            <div 
+                className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-indigo-500 selection:text-white"
+                style={{
+                    backgroundImage: "url('/assets/images/garage_bg.png')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                }}
+            >
                 
-                {/* Loop Video Background (Autoplays silently in background) */}
+                {/* Loop Video Background (Autoplays silently in background, poster falls back to premium image) */}
                 <video 
                     autoPlay 
                     loop 
                     muted 
                     playsInline 
+                    poster="/assets/images/garage_bg.png"
                     className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 pointer-events-none"
                 >
                     <source src="https://assets.mixkit.co/videos/preview/mixkit-car-mechanic-working-on-an-engine-40893-large.mp4" type="video/mp4" />
                 </video>
 
                 {/* Dark Vignette Overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950 z-0 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/70 to-slate-950 z-0 pointer-events-none" />
                 
                 {/* Glow Effects */}
                 <div className="absolute top-0 -left-40 h-[600px] w-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
@@ -91,7 +99,7 @@ export default function Welcome({ auth }) {
                                 Management.
                             </h1>
                             <p className="text-slate-350 text-base sm:text-lg max-w-lg leading-relaxed">
-                                Streamline your automotive workshop operations with an intelligent digital workspace. Manage appointments, schedule mechanics without conflicts, track spare parts stock, generate invoices, and consult our built-in AI advisor for diagnostics.
+                                Streamline your workshop operations with an intelligent digital workspace. Manage appointments, schedule mechanics without conflicts, track spare parts stock, generate invoices, and consult our built-in AI advisor for diagnostics.
                             </p>
                             
                             <div className="pt-4 flex flex-col sm:flex-row gap-4">
