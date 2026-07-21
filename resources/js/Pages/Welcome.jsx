@@ -1,5 +1,4 @@
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
 import { 
     Car, 
     Wrench, 
@@ -7,18 +6,10 @@ import {
     BrainCircuit, 
     ArrowRight, 
     Coins, 
-    CalendarRange,
-    Play,
-    Pause,
-    Maximize,
-    Volume2,
-    X,
-    Sparkles
+    CalendarRange 
 } from 'lucide-react';
 
 export default function Welcome({ auth }) {
-    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
     return (
         <>
             <Head title="VMS Pro - Vehicle Service System" />
@@ -26,18 +17,18 @@ export default function Welcome({ auth }) {
             {/* Custom Automotive Themed Premium UI with Video Background */}
             <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
                 
-                {/* Loop Video Background (Covers entire screen with low opacity for premium dark mode contrast) */}
+                {/* Loop Video Background (Autoplays silently in background) */}
                 <video 
                     autoPlay 
                     loop 
                     muted 
                     playsInline 
-                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-25 pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 pointer-events-none"
                 >
                     <source src="https://assets.mixkit.co/videos/preview/mixkit-car-mechanic-working-on-an-engine-40893-large.mp4" type="video/mp4" />
                 </video>
 
-                {/* Dark Vignette Overlay to ensure text readability */}
+                {/* Dark Vignette Overlay for readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950 z-0 pointer-events-none" />
                 
                 {/* Glow Effects */}
@@ -121,19 +112,18 @@ export default function Welcome({ auth }) {
                                             Sign In to Garage
                                             <ArrowRight className="h-4.5 w-4.5" />
                                         </Link>
-                                        <button
-                                            onClick={() => setIsVideoPlaying(true)}
-                                            className="border border-slate-800 hover:bg-slate-900 text-slate-300 font-bold px-8 py-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all"
+                                        <Link
+                                            href={route('register')}
+                                            className="border border-slate-850 hover:bg-slate-900 text-slate-300 font-bold px-8 py-4 rounded-2xl text-sm text-center transition-all"
                                         >
-                                            <Play className="h-4.5 w-4.5 text-indigo-400 fill-indigo-400" />
-                                            Watch System Demo
-                                        </button>
+                                            Create Advisor Account
+                                        </Link>
                                     </>
                                 )}
                             </div>
                         </div>
 
-                        {/* Interactive UI Mockup Card with video showcase */}
+                        {/* Interactive UI Mockup Card (Sleek Glassmorphic stats layout) */}
                         <div className="relative">
                             <div className="absolute inset-0 bg-indigo-500/10 rounded-[32px] blur-3xl pointer-events-none" />
                             <div className="relative bg-slate-900/60 border border-slate-800 p-8 rounded-[32px] shadow-2xl backdrop-blur-xl space-y-6">
@@ -145,41 +135,26 @@ export default function Welcome({ auth }) {
                                         <div className="h-3 w-3 rounded-full bg-amber-500" />
                                         <div className="h-3 w-3 rounded-full bg-emerald-500" />
                                     </div>
-                                    <span className="text-[10px] font-mono text-slate-500">WORKSHOP_OVERVIEW.SYS</span>
+                                    <span className="text-[10px] font-mono text-slate-500">WORKSHOP_STATUS.SYS</span>
                                 </div>
 
-                                {/* Custom Visual Player Box */}
-                                <div 
-                                    onClick={() => setIsVideoPlaying(true)}
-                                    className="h-56 border border-slate-800 bg-slate-950/80 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40 z-10" />
-                                    
-                                    {/* Simulated video background frame */}
-                                    <div className="absolute inset-0 opacity-40 group-hover:scale-105 transition-transform duration-700 bg-[url('https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?q=80&w=1000')] bg-cover bg-center" />
-
-                                    {/* Glowing Play Circle */}
-                                    <div className="z-20 bg-indigo-600/90 text-white p-5 rounded-full shadow-xl shadow-indigo-600/30 group-hover:scale-110 transition-transform duration-300">
-                                        <Play className="h-7 w-7 fill-white" />
+                                <div className="p-6 border border-slate-800 bg-slate-950/70 rounded-2xl flex flex-col justify-center relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 h-24 w-24 bg-indigo-600/5 rounded-bl-full pointer-events-none" />
+                                    <div className="flex items-center gap-3 mb-2 text-indigo-400 font-bold text-sm">
+                                        <Car className="h-5 w-5" />
+                                        Garage Diagnostics Active
                                     </div>
-
-                                    <div className="absolute bottom-3 left-4 right-4 z-20 flex justify-between items-center text-xs">
-                                        <span className="font-bold tracking-wide flex items-center gap-1.5">
-                                            <Sparkles className="h-4 w-4 text-indigo-400 animate-pulse" />
-                                            VMS Pro Video Tour
-                                        </span>
-                                        <span className="text-[10px] text-slate-400 font-mono bg-slate-900/80 px-2 py-0.5 rounded-md border border-slate-800">
-                                            04:32
-                                        </span>
-                                    </div>
+                                    <p className="text-xs text-slate-400 leading-normal">
+                                        Real-time schedule monitoring active. Conflict protection algorithm listening for double-bookings.
+                                    </p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-slate-950 p-4.5 rounded-2xl border border-slate-800/80">
+                                    <div className="bg-slate-950/80 p-4.5 rounded-2xl border border-slate-800/80">
                                         <span className="text-[10px] font-bold text-slate-500 block uppercase">Workshops Active</span>
                                         <span className="text-2xl font-extrabold text-indigo-400">98.4%</span>
                                     </div>
-                                    <div className="bg-slate-950 p-4.5 rounded-2xl border border-slate-800/80">
+                                    <div className="bg-slate-950/80 p-4.5 rounded-2xl border border-slate-800/80">
                                         <span className="text-[10px] font-bold text-slate-500 block uppercase">Low Stock Alerts</span>
                                         <span className="text-2xl font-extrabold text-amber-500">2 Items</span>
                                     </div>
@@ -238,65 +213,6 @@ export default function Welcome({ auth }) {
 
                     </div>
                 </main>
-
-                {/* Video / Showcase Modal */}
-                {isVideoPlaying && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-                        <div className="bg-slate-950 w-full max-w-4xl rounded-3xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                            {/* Modal Header */}
-                            <div className="flex justify-between items-center px-6 py-4 border-b border-slate-900 bg-slate-900/40">
-                                <div className="flex items-center gap-2">
-                                    <Sparkles className="h-5 w-5 text-indigo-400" />
-                                    <span className="font-bold text-sm">System Walkthrough & Demo Tour</span>
-                                </div>
-                                <button 
-                                    onClick={() => setIsVideoPlaying(false)}
-                                    className="p-1.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors"
-                                >
-                                    <X className="h-5 w-5" />
-                                </button>
-                            </div>
-
-                            {/* Custom Video Player UI */}
-                            <div className="relative aspect-video bg-black flex items-center justify-center group/player">
-                                <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-black/30 opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                                
-                                {/* Simulated loop walkthrough video clip */}
-                                <video 
-                                    autoPlay 
-                                    loop 
-                                    muted 
-                                    playsInline 
-                                    className="w-full h-full object-cover opacity-80"
-                                >
-                                    <source src="https://assets.mixkit.co/videos/preview/mixkit-car-mechanic-working-on-an-engine-40893-large.mp4" type="video/mp4" />
-                                </video>
-
-                                {/* Custom controls (overlay during hover) */}
-                                <div className="absolute bottom-0 left-0 right-0 z-30 p-4 bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-xs opacity-0 group-hover/player:opacity-100 transition-opacity duration-300">
-                                    <div className="flex items-center gap-3">
-                                        <button className="text-white hover:text-indigo-400">
-                                            <Pause className="h-4.5 w-4.5 fill-white" />
-                                        </button>
-                                        <button className="text-white hover:text-indigo-400">
-                                            <Volume2 className="h-4.5 w-4.5" />
-                                        </button>
-                                        <span className="text-[10px] text-slate-400 font-mono">01:45 / 04:32</span>
-                                    </div>
-
-                                    {/* Progress bar */}
-                                    <div className="flex-1 mx-6 h-1 bg-slate-800 rounded-full overflow-hidden relative">
-                                        <div className="absolute top-0 bottom-0 left-0 w-[40%] bg-indigo-500" />
-                                    </div>
-
-                                    <button className="text-white hover:text-indigo-400">
-                                        <Maximize className="h-4.5 w-4.5" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Footer */}
                 <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-slate-900 text-center text-xs text-slate-500 relative z-10">
