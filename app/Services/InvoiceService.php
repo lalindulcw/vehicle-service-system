@@ -82,6 +82,17 @@ class InvoiceService
                 'properties' => ['invoice_id' => $invoice->id, 'invoice_no' => $invoice->invoice_no]
             ]);
 
+            // Send email notification to customer if they have an email address
+            if ($invoice->booking->customer->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($invoice->booking->customer->email)
+                        ->send(new \App\Mail\InvoicePaidMail($invoice));
+                } catch (\Exception $e) {
+                    // Log mail exception but do not fail the transaction
+                    \Illuminate\Support\Facades\Log::error("Failed to send invoice email: " . $e->getMessage());
+                }
+            }
+
             return $invoice;
         });
     }
