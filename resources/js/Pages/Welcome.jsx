@@ -18,18 +18,31 @@ import {
 
 export default function Welcome({ auth }) {
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-    const [activeTab, setActiveTab] = useState('advisor');
 
     return (
         <>
             <Head title="VMS Pro - Vehicle Service System" />
             
-            {/* Custom Automotive Themed Premium UI */}
+            {/* Custom Automotive Themed Premium UI with Video Background */}
             <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
                 
+                {/* Loop Video Background (Covers entire screen with low opacity for premium dark mode contrast) */}
+                <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline 
+                    className="absolute inset-0 w-full h-full object-cover z-0 opacity-25 pointer-events-none"
+                >
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-car-mechanic-working-on-an-engine-40893-large.mp4" type="video/mp4" />
+                </video>
+
+                {/* Dark Vignette Overlay to ensure text readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/70 to-slate-950 z-0 pointer-events-none" />
+                
                 {/* Glow Effects */}
-                <div className="absolute top-0 -left-40 h-[600px] w-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-0 -right-40 h-[600px] w-[600px] bg-violet-500/10 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-0 -left-40 h-[600px] w-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+                <div className="absolute bottom-0 -right-40 h-[600px] w-[600px] bg-violet-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
                 
                 {/* Header/Navbar */}
                 <header className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between relative z-10">
@@ -86,7 +99,7 @@ export default function Welcome({ auth }) {
                                 </span> <br />
                                 Management.
                             </h1>
-                            <p className="text-slate-400 text-base sm:text-lg max-w-lg leading-relaxed">
+                            <p className="text-slate-350 text-base sm:text-lg max-w-lg leading-relaxed">
                                 Streamline your automotive workshop operations with an intelligent digital workspace. Manage appointments, schedule mechanics without conflicts, track spare parts stock, generate invoices, and consult our built-in AI advisor for diagnostics.
                             </p>
                             
@@ -112,7 +125,7 @@ export default function Welcome({ auth }) {
                                             onClick={() => setIsVideoPlaying(true)}
                                             className="border border-slate-800 hover:bg-slate-900 text-slate-300 font-bold px-8 py-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all"
                                         >
-                                            <Play className="h-4.5 w-4.5 text-indigo-500 fill-indigo-500" />
+                                            <Play className="h-4.5 w-4.5 text-indigo-400 fill-indigo-400" />
                                             Watch System Demo
                                         </button>
                                     </>
@@ -185,7 +198,7 @@ export default function Welcome({ auth }) {
                                 <CalendarRange className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-base">Schedule Guard</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-xs text-slate-350 leading-relaxed">
                                 Automate appointment checking to prevent double-booking mechanics and bays with a strict 90-minute buffer.
                             </p>
                         </div>
@@ -196,7 +209,7 @@ export default function Welcome({ auth }) {
                                 <Wrench className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-base">Inventory Deduction</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-xs text-slate-350 leading-relaxed">
                                 Auto-deduct stock quantities on job completion and receive flashing dashboard warning badges when stock falls.
                             </p>
                         </div>
@@ -207,7 +220,7 @@ export default function Welcome({ auth }) {
                                 <Coins className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-base">Billing Transactions</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-xs text-slate-350 leading-relaxed">
                                 Generate unique invoice numbers, automatically calculate labor/parts costs, and print/export PDF receipts.
                             </p>
                         </div>
@@ -218,7 +231,7 @@ export default function Welcome({ auth }) {
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-base">Spatie Guard RBAC</h3>
-                            <p className="text-xs text-slate-400 leading-relaxed">
+                            <p className="text-xs text-slate-350 leading-relaxed">
                                 Protect critical API resources using specific authorization gates for Admin, Advisors, and Mechanic staff.
                             </p>
                         </div>
@@ -248,30 +261,16 @@ export default function Welcome({ auth }) {
                             <div className="relative aspect-video bg-black flex items-center justify-center group/player">
                                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-transparent to-black/30 opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 pointer-events-none" />
                                 
-                                {/* Simulated loop walkthrough image/clip */}
-                                <img 
-                                    src="https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?q=80&w=1200" 
-                                    alt="Walkthrough Frame"
+                                {/* Simulated loop walkthrough video clip */}
+                                <video 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline 
                                     className="w-full h-full object-cover opacity-80"
-                                />
-
-                                {/* Simulated HUD Diagnostics Overlay */}
-                                <div className="absolute inset-0 z-20 p-8 flex flex-col justify-between pointer-events-none">
-                                    <div className="flex justify-between items-start">
-                                        <div className="bg-slate-900/80 border border-slate-850 px-3 py-1 rounded-lg text-[10px] font-mono text-indigo-400 tracking-wider">
-                                            DEMO_MODE: PLAYING
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-4">
-                                        <div className="max-w-md bg-slate-950/80 border border-slate-850 p-4 rounded-xl backdrop-blur-sm">
-                                            <h4 className="font-bold text-xs text-indigo-400 mb-1">AI Advisor Feature Tour</h4>
-                                            <p className="text-[10px] text-slate-400 leading-normal">
-                                                In the demo video, we showcase entering natural language complaints and resolving parts SKU allocations automatically.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                >
+                                    <source src="https://assets.mixkit.co/videos/preview/mixkit-car-mechanic-working-on-an-engine-40893-large.mp4" type="video/mp4" />
+                                </video>
 
                                 {/* Custom controls (overlay during hover) */}
                                 <div className="absolute bottom-0 left-0 right-0 z-30 p-4 bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between text-xs opacity-0 group-hover/player:opacity-100 transition-opacity duration-300">
