@@ -40,6 +40,11 @@ class CustomerController extends Controller
         return Inertia::render('Customers/Index', [
             'customers' => $customers,
             'filters' => $request->only(['search', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Customer::count(),
+                'recent' => Customer::where('created_at', '>=', now()->subDays(7))->count(),
+                'has_notes' => Customer::whereNotNull('notes')->where('notes', '!=', '')->count(),
+            ]
         ]);
     }
 

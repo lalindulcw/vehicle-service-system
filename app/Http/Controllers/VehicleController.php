@@ -46,6 +46,11 @@ class VehicleController extends Controller
             'vehicles' => $vehicles,
             'customers' => $customers,
             'filters' => $request->only(['search', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Vehicle::count(),
+                'high_mileage' => Vehicle::where('mileage', '>=', 100000)->count(),
+                'recent' => Vehicle::where('created_at', '>=', now()->subDays(7))->count(),
+            ]
         ]);
     }
 
