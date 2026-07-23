@@ -26,11 +26,12 @@ import {
 export default function Index({ customers, filters, stats }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
+    const [customerToDelete, setCustomerToDelete] = useState(null);
     const [searchVal, setSearchVal] = useState(filters.search || '');
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
 
     // Form setup using Inertia's useForm hook
-    const { data, setData, post, put, errors, reset, clearErrors } = useForm({
+    const { data, setData, post, put, errors, processing, reset, clearErrors } = useForm({
         name: '',
         email: '',
         phone: '',
@@ -99,18 +100,12 @@ export default function Index({ customers, filters, stats }) {
         }, { preserveState: true });
     };
 
-    const deleteCustomer = (id) => {
-        if (confirm('Are you sure you want to delete this customer? All associated vehicles will be checked.')) {
-            router.delete(route('customers.destroy', id));
-        }
-    };
-
     return (
         <AuthenticatedLayout header="Customer Management">
             <Head title="Customers" />
 
             {/* Premium Mini-Statistics Banner */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 animate-in fade-in duration-350">
                 {/* Stat 1: Total Customers */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl flex items-center justify-between shadow-sm relative overflow-hidden group">
                     <div className="space-y-1 z-10">
@@ -151,16 +146,28 @@ export default function Index({ customers, filters, stats }) {
             {/* Controls Bar */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
                 
-                {/* Search Bar */}
+                {/* Search Bar with Quick Clear Button */}
                 <form onSubmit={runSearch} className="relative w-full md:max-w-md">
                     <input
                         type="text"
                         placeholder="Search by customer name, email, or phone..."
                         value={searchVal}
                         onChange={handleSearchChange}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all"
+                        className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all"
                     />
                     <Search className="h-5 w-5 text-slate-400 absolute left-4 top-3.5" />
+                    {searchVal && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSearchVal('');
+                                router.get(route('customers.index'), {}, { preserveState: true });
+                            }}
+                            className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
                     <button type="submit" className="hidden">Search</button>
                 </form>
 
@@ -272,7 +279,7 @@ export default function Index({ customers, filters, stats }) {
                                                 <Edit className="h-4.5 w-4.5" />
                                             </button>
                                             <button
-                                                onClick={() => deleteCustomer(customer.id)}
+                                                onClick={() => setCustomerToDelete(customer)}
                                                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-rose-500 hover:text-rose-600 rounded-xl transition-all"
                                                 title="Delete Customer"
                                             >
@@ -357,7 +364,7 @@ export default function Index({ customers, filters, stats }) {
                                                         <Edit className="h-4.5 w-4.5" />
                                                     </button>
                                                     <button
-                                                        onClick={() => deleteCustomer(customer.id)}
+                                                        onClick={() => setCustomerToDelete(customer)}
                                                         className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-rose-500 hover:text-rose-600 rounded-xl transition-colors"
                                                     >
                                                         <Trash2 className="h-4.5 w-4.5" />
@@ -425,6 +432,41 @@ export default function Index({ customers, filters, stats }) {
                                 />
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Glassmorphic Delete Confirmation Dialog */}
+            {customerToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
+                        <div className="mx-auto h-16 w-16 bg-rose-50 dark:bg-rose-500/10 text-rose-600 flex items-center justify-center rounded-3xl border border-rose-500/10">
+                            <Trash2 className="h-8 w-8" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="font-extrabold text-lg">Confirm Deletion</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                Are you sure you want to delete customer <span className="font-bold text-slate-900 dark:text-white">"{customerToDelete.name}"</span>? This action will check for any linked vehicles and cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                onClick={() => setCustomerToDelete(null)}
+                                className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    router.delete(route('customers.destroy', customerToDelete.id), {
+                                        onSuccess: () => setCustomerToDelete(null)
+                                    });
+                                }}
+                                className="flex-1 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-lg shadow-rose-600/20 transition-all hover:scale-[1.02]"
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -527,7 +569,7 @@ export default function Index({ customers, filters, stats }) {
                                 {errors.notes && <p className="text-xs text-rose-500 mt-1 font-medium">{errors.notes}</p>}
                             </div>
 
-                            {/* Footer Submit */}
+                            {/* Footer Submit with Processing Spinner */}
                             <div className="flex gap-3 justify-end pt-4 border-t border-slate-100 dark:border-slate-800">
                                 <button
                                     type="button"
@@ -538,8 +580,15 @@ export default function Index({ customers, filters, stats }) {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20"
+                                    disabled={processing}
+                                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
                                 >
+                                    {processing && (
+                                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    )}
                                     {editingCustomer ? 'Save Changes' : 'Create Customer'}
                                 </button>
                             </div>

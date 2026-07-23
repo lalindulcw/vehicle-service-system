@@ -27,10 +27,11 @@ import {
 export default function Index({ vehicles, customers, filters, stats }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingVehicle, setEditingVehicle] = useState(null);
+    const [vehicleToDelete, setVehicleToDelete] = useState(null);
     const [searchVal, setSearchVal] = useState(filters.search || '');
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
 
-    const { data, setData, post, put, errors, reset, clearErrors } = useForm({
+    const { data, setData, post, put, errors, processing, reset, clearErrors } = useForm({
         customer_id: '',
         registration_no: '',
         make: '',
@@ -99,12 +100,6 @@ export default function Index({ vehicles, customers, filters, stats }) {
         }, { preserveState: true });
     };
 
-    const deleteVehicle = (id) => {
-        if (confirm('Are you sure you want to delete this vehicle? All bookings will be verified.')) {
-            router.delete(route('vehicles.destroy', id));
-        }
-    };
-
     // Helper for manufacturer logo color gradients
     const getMakeGradient = (make) => {
         const lower = make.toLowerCase();
@@ -121,7 +116,7 @@ export default function Index({ vehicles, customers, filters, stats }) {
             <Head title="Vehicles" />
 
             {/* Premium Mini-Statistics Banner */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 animate-in fade-in duration-350">
                 {/* Stat 1: Total Fleet */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl flex items-center justify-between shadow-sm relative overflow-hidden group">
                     <div className="space-y-1 z-10">
@@ -162,16 +157,28 @@ export default function Index({ vehicles, customers, filters, stats }) {
             {/* Controls Bar */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
                 
-                {/* Search Bar */}
+                {/* Search Bar with Quick Clear Button */}
                 <form onSubmit={runSearch} className="relative w-full md:max-w-md">
                     <input
                         type="text"
                         placeholder="Search reg no, make, model or owner..."
                         value={searchVal}
                         onChange={(e) => setSearchVal(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm animate-in"
+                        className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
                     />
                     <Search className="h-5 w-5 text-slate-400 absolute left-4 top-3.5" />
+                    {searchVal && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSearchVal('');
+                                router.get(route('vehicles.index'), {}, { preserveState: true });
+                            }}
+                            className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
                     <button type="submit" className="hidden">Search</button>
                 </form>
 
@@ -286,7 +293,7 @@ export default function Index({ vehicles, customers, filters, stats }) {
                                     </div>
 
                                     {/* Actions Tray */}
-                                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-850 flex items-center justify-end gap-1.5">
+                                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-855 flex items-center justify-end gap-1.5">
                                         <button
                                             onClick={() => openEditModal(vehicle)}
                                             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-indigo-500 hover:text-indigo-600 rounded-xl transition-all"
@@ -295,7 +302,7 @@ export default function Index({ vehicles, customers, filters, stats }) {
                                             <Edit className="h-4.5 w-4.5" />
                                         </button>
                                         <button
-                                            onClick={() => deleteVehicle(vehicle.id)}
+                                            onClick={() => setVehicleToDelete(vehicle)}
                                             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-rose-500 hover:text-rose-600 rounded-xl transition-all"
                                             title="Delete vehicle record"
                                         >
@@ -384,8 +391,8 @@ export default function Index({ vehicles, customers, filters, stats }) {
                                                         <Edit className="h-4.5 w-4.5" />
                                                     </button>
                                                     <button
-                                                        onClick={() => deleteVehicle(vehicle.id)}
-                                                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-rose-500 hover:text-rose-600 rounded-xl transition-colors"
+                                                        onClick={() => setVehicleToDelete(vehicle)}
+                                                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-855 text-rose-500 hover:text-rose-600 rounded-xl transition-colors"
                                                     >
                                                         <Trash2 className="h-4.5 w-4.5" />
                                                     </button>
@@ -446,12 +453,47 @@ export default function Index({ vehicles, customers, filters, stats }) {
                                     className={`px-3 py-1 text-xs font-bold rounded-lg border ${
                                         link.active 
                                         ? 'bg-indigo-600 border-indigo-600 text-white' 
-                                        : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                                        : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-855'
                                     }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Glassmorphic Deletion Modal */}
+            {vehicleToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
+                        <div className="mx-auto h-16 w-16 bg-rose-50 dark:bg-rose-500/10 text-rose-600 flex items-center justify-center rounded-3xl border border-rose-500/10">
+                            <Trash2 className="h-8 w-8" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="font-extrabold text-lg">Confirm Vehicle Delete</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                Are you sure you want to delete vehicle <span className="font-bold text-slate-900 dark:text-white">"{vehicleToDelete.registration_no}" ({vehicleToDelete.make} {vehicleToDelete.model})</span>? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                onClick={() => setVehicleToDelete(null)}
+                                className="flex-1 py-3 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    router.delete(route('vehicles.destroy', vehicleToDelete.id), {
+                                        onSuccess: () => setVehicleToDelete(null)
+                                    });
+                                }}
+                                className="flex-1 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-lg shadow-rose-600/20 transition-all hover:scale-[1.02]"
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -606,8 +648,15 @@ export default function Index({ vehicles, customers, filters, stats }) {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20"
+                                    disabled={processing}
+                                    className="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
                                 >
+                                    {processing && (
+                                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    )}
                                     {editingVehicle ? 'Save Changes' : 'Register Vehicle'}
                                 </button>
                             </div>
