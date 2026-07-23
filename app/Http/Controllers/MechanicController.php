@@ -40,6 +40,11 @@ class MechanicController extends Controller
         return Inertia::render('Mechanics/Index', [
             'mechanics' => $mechanics,
             'filters' => $request->only(['search', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Mechanic::count(),
+                'specializations' => Mechanic::distinct('specialization')->whereNotNull('specialization')->where('specialization', '!=', '')->count(),
+                'recent' => Mechanic::where('created_at', '>=', now()->subDays(7))->count(),
+            ]
         ]);
     }
 

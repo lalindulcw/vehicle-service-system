@@ -39,6 +39,11 @@ class PartController extends Controller
         return Inertia::render('Parts/Index', [
             'parts' => $parts,
             'filters' => $request->only(['search', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Part::count(),
+                'low_stock' => Part::whereRaw('stock <= min_stock_threshold')->where('stock', '>', 0)->count(),
+                'out_of_stock' => Part::where('stock', 0)->count(),
+            ]
         ]);
     }
 
