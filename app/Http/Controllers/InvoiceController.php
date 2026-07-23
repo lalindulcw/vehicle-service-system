@@ -63,6 +63,12 @@ class InvoiceController extends Controller
             'invoices' => $invoices,
             'uninvoicedBookings' => $uninvoicedBookings,
             'filters' => $request->only(['search', 'status', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Invoice::count(),
+                'paid' => Invoice::where('status', 'paid')->count(),
+                'pending' => Invoice::where('status', 'pending')->count(),
+                'revenue' => (double) Invoice::where('status', 'paid')->sum('total_amount'),
+            ]
         ]);
     }
 
