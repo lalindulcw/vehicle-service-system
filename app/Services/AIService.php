@@ -68,6 +68,15 @@ class AIService
                 'labor_cost' => 3500.00,
                 'duration' => '2 hours',
                 'part_skus' => []
+            ],
+            [
+                'keywords' => ['tyre', 'tire', 'flat', 'puncture', 'pressure', 'tier'],
+                'issue' => 'Tyre Puncture & Low Pressure Fault',
+                'description' => 'A flat tyre or drop in inflation pressure is typically caused by a sharp object puncture (nail/screw) or valve leakage. Driving on it can ruin the wheel rim.',
+                'service' => 'Tyre Puncture Inspection & Wheel Alignment check',
+                'labor_cost' => 1500.00,
+                'duration' => '30 minutes',
+                'part_skus' => []
             ]
         ];
 
