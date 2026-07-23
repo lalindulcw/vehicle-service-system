@@ -11,7 +11,10 @@ import {
     Wrench,
     Plus,
     X,
-    Info
+    Info,
+    CheckCircle2,
+    AlertCircle,
+    ArrowLeft
 } from 'lucide-react';
 
 export default function Calendar({ events }) {
@@ -63,7 +66,7 @@ export default function Calendar({ events }) {
         });
     }
 
-    // 3. Next month leading days to complete grid (multiples of 7, let's pad to 42 items for 6 weeks)
+    // 3. Next month leading days to complete grid (pad to 42 items for 6 weeks grid)
     const remainingDays = 42 - calendarDays.length;
     for (let i = 1; i <= remainingDays; i++) {
         calendarDays.push({
@@ -73,48 +76,78 @@ export default function Calendar({ events }) {
         });
     }
 
+    // Format Date object to YYYY-MM-DD local string (Timezone-safe)
+    const formatDateKey = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
+
     // Filter events for a specific day
     const getEventsForDay = (date) => {
-        return events.filter(e => {
-            const eventDate = new Date(e.start);
-            return eventDate.getFullYear() === date.getFullYear() &&
-                   eventDate.getMonth() === date.getMonth() &&
-                   eventDate.getDate() === date.getDate();
-        });
+        const dateKey = formatDateKey(date);
+        return events.filter(e => e.date_str === dateKey);
+    };
+
+    const getStatusStyles = (status) => {
+        switch (status) {
+            case 'completed':
+                return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+            case 'in_progress':
+                return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20';
+            case 'cancelled':
+                return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
+            default:
+                return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+        }
     };
 
     return (
-        <AuthenticatedLayout header="Schedule Calendar">
+        <AuthenticatedLayout header="Workshop Schedule Calendar">
             <Head title="Calendar" />
 
+            {/* Back to list and header */}
+            <div className="flex justify-between items-center mb-6">
+                <Link
+                    href={route('bookings.index')}
+                    className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Bookings
+                </Link>
+            </div>
+
             {/* Header controls */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 p-2.5 rounded-xl">
-                        <CalendarIcon className="h-5 w-5" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-8 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 flex items-center justify-center border border-indigo-500/10">
+                        <CalendarIcon className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold">{monthNames[month]} {year}</h2>
-                        <p className="text-xs text-slate-400">Interactive service booking timeline</p>
+                        <h2 className="text-xl font-black text-slate-900 dark:text-white">{monthNames[month]} {year}</h2>
+                        <p className="text-xs text-slate-400 font-bold block pt-0.5">Interactive service booking planner</p>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                     <button 
                         onClick={prevMonth}
-                        className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="p-2.5 border border-slate-200 dark:border-slate-800 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-500 dark:text-slate-400 transition-colors"
+                        title="Previous Month"
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button 
                         onClick={() => setCurrentDate(new Date())}
-                        className="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="px-5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300 transition-colors"
                     >
                         Today
                     </button>
                     <button 
                         onClick={nextMonth}
-                        className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        className="p-2.5 border border-slate-200 dark:border-slate-800 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-500 dark:text-slate-400 transition-colors"
+                        title="Next Month"
                     >
                         <ChevronRight className="h-5 w-5" />
                     </button>
@@ -122,11 +155,11 @@ export default function Calendar({ events }) {
             </div>
 
             {/* Calendar Grid Container */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8 animate-in fade-in duration-300">
                 {/* Day Names Row */}
-                <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+                <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/20">
                     {dayNames.map(day => (
-                        <div key={day} className="py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                        <div key={day} className="py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
                             {day}
                         </div>
                     ))}
@@ -136,42 +169,43 @@ export default function Calendar({ events }) {
                 <div className="grid grid-cols-7 grid-rows-6 divide-x divide-y divide-slate-200 dark:divide-slate-800 border-l border-t border-transparent">
                     {calendarDays.map((dayItem, idx) => {
                         const dayEvents = getEventsForDay(dayItem.dateObj);
-                        const isToday = new Date().toDateString() === dayItem.dateObj.toDateString();
+                        const isToday = formatDateKey(new Date()) === formatDateKey(dayItem.dateObj);
 
                         return (
                             <div 
                                 key={idx} 
-                                className={`min-h-[110px] p-2 flex flex-col transition-colors ${
+                                className={`min-h-[120px] p-2.5 flex flex-col justify-between transition-colors hover:bg-slate-50/30 dark:hover:bg-slate-800/10 ${
                                     dayItem.isCurrentMonth 
                                     ? 'bg-transparent' 
-                                    : 'bg-slate-50/40 dark:bg-slate-950/20 text-slate-400'
+                                    : 'bg-slate-50/40 dark:bg-slate-950/10 text-slate-400 opacity-60'
                                 }`}
                             >
                                 {/* Date Number */}
-                                <div className="flex justify-end mb-1">
-                                    <span className={`text-xs font-bold h-6 w-6 flex items-center justify-center rounded-full ${
+                                <div className="flex justify-end">
+                                    <span className={`text-xs font-black h-7 w-7 flex items-center justify-center rounded-xl transition-all ${
                                         isToday 
-                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
-                                        : 'text-slate-500'
+                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-105' 
+                                        : 'text-slate-500 dark:text-slate-400'
                                     }`}>
                                         {dayItem.day}
                                     </span>
                                 </div>
 
                                 {/* Events List */}
-                                <div className="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar pr-0.5 max-h-[80px]">
+                                <div className="flex-1 overflow-y-auto space-y-1.5 mt-2 custom-scrollbar pr-0.5 max-h-[85px]">
                                     {dayEvents.map(event => (
                                         <button
                                             key={event.id}
                                             onClick={() => setSelectedEvent(event)}
-                                            className={`w-full text-left px-2 py-1 rounded-lg text-[10px] font-bold truncate transition-all hover:scale-[1.02] ${
-                                                event.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                                                event.status === 'in_progress' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
-                                                event.status === 'cancelled' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' :
-                                                'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                            }`}
+                                            className={`w-full text-left px-2.5 py-1.5 rounded-xl text-[10px] font-bold truncate transition-all border hover:scale-[1.02] flex items-center gap-1.5 ${getStatusStyles(event.status)}`}
                                         >
-                                            {event.title}
+                                            <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                                                event.status === 'completed' ? 'bg-emerald-500' :
+                                                event.status === 'in_progress' ? 'bg-indigo-500' :
+                                                event.status === 'cancelled' ? 'bg-rose-500' :
+                                                'bg-amber-500'
+                                            }`} />
+                                            <span className="truncate">{event.title}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -181,7 +215,7 @@ export default function Calendar({ events }) {
                 </div>
             </div>
 
-            {/* Event Detail Modal popup */}
+            {/* Event Detail Modal Popup */}
             {selectedEvent && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -189,17 +223,18 @@ export default function Calendar({ events }) {
                         <div className="flex justify-between items-center px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
                             <div className="flex items-center gap-2">
                                 <Info className="h-5 w-5 text-indigo-500" />
-                                <h3 className="font-bold text-base">Booking Details</h3>
+                                <h3 className="font-bold text-base">Booking Summary</h3>
                             </div>
-                            <button onClick={() => setSelectedEvent(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                            <button onClick={() => setSelectedEvent(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
 
                         {/* Body */}
                         <div className="p-6 space-y-4 text-sm">
+                            {/* Schedule Date Time */}
                             <div>
-                                <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Time & Date</span>
+                                <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Scheduled Date & Time</span>
                                 <div className="flex items-center gap-2 font-semibold">
                                     <Clock className="h-4.5 w-4.5 text-indigo-500" />
                                     {new Date(selectedEvent.start).toLocaleString('en-LK', {
@@ -209,6 +244,7 @@ export default function Calendar({ events }) {
                                 </div>
                             </div>
 
+                            {/* Customer & Vehicle */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Customer</span>
@@ -226,47 +262,50 @@ export default function Calendar({ events }) {
                                 </div>
                             </div>
 
+                            {/* Mechanic & Status */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Mechanic</span>
+                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Assigned Mechanic</span>
                                     <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
                                         <Wrench className="h-4.5 w-4.5 text-slate-400" />
                                         {selectedEvent.mechanic}
                                     </div>
                                 </div>
                                 <div>
-                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Status</span>
-                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold capitalize mt-1 ${
-                                        selectedEvent.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                                        selectedEvent.status === 'in_progress' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
-                                        selectedEvent.status === 'cancelled' ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' :
-                                        'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                    }`}>
+                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Job Status</span>
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold capitalize mt-1 border ${getStatusStyles(selectedEvent.status)}`}>
+                                        <span className={`h-1.5 w-1.5 rounded-full ${
+                                            selectedEvent.status === 'completed' ? 'bg-emerald-500' :
+                                            selectedEvent.status === 'in_progress' ? 'bg-indigo-500' :
+                                            selectedEvent.status === 'cancelled' ? 'bg-rose-500' :
+                                            'bg-amber-500'
+                                        }`} />
                                         {selectedEvent.status.replace('_', ' ')}
                                     </span>
                                 </div>
                             </div>
 
+                            {/* Customer description note */}
                             {selectedEvent.notes && (
                                 <div>
-                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Notes / Symptoms</span>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 leading-relaxed">
-                                        {selectedEvent.notes}
+                                    <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Symptoms / Notes</span>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-850 leading-relaxed italic">
+                                        "{selectedEvent.notes}"
                                     </p>
                                 </div>
                             )}
 
-                            {/* Footer actions */}
+                            {/* Footer links */}
                             <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                                 <Link
                                     href={route('bookings.index', { search: selectedEvent.title.split(' ')[0] })}
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold text-center block transition-colors"
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold text-center block transition-all hover:scale-[1.02] shadow-lg shadow-indigo-600/20"
                                 >
                                     Manage Job Card
                                 </Link>
                                 <button
                                     onClick={() => setSelectedEvent(null)}
-                                    className="px-5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-850"
+                                    className="px-5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
                                 >
                                     Close
                                 </button>

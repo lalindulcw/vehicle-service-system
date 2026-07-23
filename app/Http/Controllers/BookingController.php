@@ -163,6 +163,7 @@ class BookingController extends Controller
                 'title' => ($booking->vehicle->registration_no) . ' - ' . ($booking->mechanic ? $booking->mechanic->name : 'Unassigned'),
                 'start' => $booking->scheduled_at->toIso8601String(),
                 'end' => $booking->scheduled_at->copy()->addMinutes(90)->toIso8601String(),
+                'date_str' => $booking->scheduled_at->format('Y-m-d'),
                 'status' => $booking->status,
                 'customer' => $booking->customer->name,
                 'vehicle' => "{$booking->vehicle->make} {$booking->vehicle->model}",
