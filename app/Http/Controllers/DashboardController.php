@@ -54,7 +54,10 @@ class DashboardController extends Controller
         } else {
             $recentBookingsQuery->whereDate('scheduled_at', '>=', $today);
         }
-        $recentBookings = $recentBookingsQuery->limit(5)->get();
+        $recentBookings = $recentBookingsQuery->limit(5)->get()->map(function ($booking) {
+            $booking->scheduled_at_formatted = $booking->scheduled_at ? $booking->scheduled_at->format('Y-m-d H:i:s') : null;
+            return $booking;
+        });
 
         // Revenue graph data (last 7 days of paid invoices)
         $revenueData = [];
