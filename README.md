@@ -1,58 +1,136 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vehicle Service Management System (VMS Pro)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A premium, full-stack vehicle service center management web application. Built using Laravel 13, Inertia.js (React), and Tailwind CSS. The system utilizes role-based access control (RBAC), database transaction boundaries, local rule-based AI diagnostics, and a variety of bonus features to deliver a complete garage operations suite.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Key Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Functional Core
+* **Authentication & RBAC:** Multi-role user guards (Admin, Service Advisor, Mechanic) using Spatie Laravel Permission.
+* **Customer Management:** Full customer CRUD with responsive grid/list displays and live searching.
+* **Vehicle Management:** Full vehicle CRUD mapped to owners with VIN, mileage, and specification fields.
+* **Mechanic Scheduler:** Mechanic management and service allocations mapped to specializations.
+* **Service Bookings & Job Cards:** Timezone-safe calendar scheduling, parts assignment, and mechanic double-booking conflict preventions.
+* **Inventory Control:** Spare parts list with automatic stock deductions upon job completion and low stock threshold alarms.
+* **Billing & Invoices:** Sequential `INV-YYYY-XXXX` invoice number generation, labor + parts math calculation, and printable invoice sheets.
+* **Metrics Dashboard:** 4-card statistics, dynamic SVG revenue chart, low stock progress bars, and upcoming schedules list.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. AI Diagnostics Engine
+* **AI Service Advisor:** Processes natural language customer complaints (e.g., "My tyre is flat" or "steering click when turning") and maps them to faults, suggested services, costs, and recommends spare parts from inventory.
 
-## Learning Laravel
+### 3. Extra Credit / Bonus Features
+* **System Audit Trail:** Admin-only Activity Log registering all user operations and database model adjustments with JSON payload details.
+* **Interactive Calendar:** Timezone-safe monthly grid scheduler with quick modal event details.
+* **PDF / Print Invoice:** Print-friendly CSS media stylesheet to print or export invoices as clean A4 receipts.
+* **Automated Tests:** 27 feature and unit tests validating access controls, scheduling conflicts, and stock rules.
+* **Docker Containerization:** Ready-to-run `Dockerfile` and `docker-compose.yml` configs.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Technology Stack
+* **Backend:** Laravel 13 (PHP 8.2+)
+* **Frontend:** Inertia.js + React 18
+* **Styling:** Tailwind CSS (Vanilla responsive layout styling)
+* **Database:** MySQL / PostgreSQL
+* **Authorization:** Spatie Laravel Permission
+* **Testing:** PHPUnit / Pest
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 📦 Setup & Installation Instructions
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Follow these steps to run the application locally on your computer:
 
+### 1. Clone & Install Dependencies
 ```bash
-composer require laravel/boost --dev
+# Clone the repository
+git clone <repository-link>
+cd vehicle-service-system
 
-php artisan boost:install
+# Install PHP Composer packages
+composer install
+
+# Install Node JS packages
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Configure Environment File
+Create a copy of `.env.example` named `.env` and configure your database parameters:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=vehicle_service_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Contributing
+### 3. Setup Database Schema & Seeders
+Generate the application key, run migrations, and execute seeders to populate initial roles, admin profiles, and sample parts:
+```bash
+# Generate app key
+php artisan key:generate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Run migrations and seed data
+php artisan migrate:fresh --seed
+```
 
-## Code of Conduct
+### 4. Seeded User Credentials (for Testing)
+Use the following profiles to log in and inspect different role capabilities:
+* **Administrator Profile:**
+  * **Email:** `admin@example.com`
+  * **Password:** `password`
+* **Service Advisor Profile:**
+  * **Email:** `advisor@example.com`
+  * **Password:** `password`
+* **Workshop Mechanic Profile:**
+  * **Email:** `mechanic@example.com`
+  * **Password:** `password`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Start Development Servers
+Run the Laravel artisan server and Node asset bundler concurrently:
+```bash
+# Start backend server (runs on http://127.0.0.1:8000)
+php artisan serve
 
-## Security Vulnerabilities
+# Start frontend bundler
+npm run dev
+# OR build production bundles
+npm run build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🐳 Docker Deployment (Alternative Setup)
+If you have Docker installed, you can launch the entire stack (web app + database) with a single command:
+```bash
+# Build and run containers
+docker-compose up -d --build
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Run migrations and seed inside the container
+docker-compose exec app php artisan migrate:fresh --seed
+```
+The application will be accessible at `http://localhost:8080`.
+
+---
+
+## 🧪 Running Automated Tests
+Run the PHPUnit test suite to verify route protection, Spatie roles, booking conflict preventions, and stock rules:
+```bash
+php artisan test
+```
+*(All 27 automated feature and unit tests will run and pass successfully).*
+
+---
+
+## 📂 Database Architecture & Relations
+The database is built on normalized relations to maintain data integrity:
+* `users` belongsToMany `roles` (Spatie permission schema).
+* `customers` hasMany `vehicles` (Owner mapping).
+* `customers` hasMany `bookings`.
+* `vehicles` hasMany `bookings` (Vehicle history).
+* `mechanics` hasMany `bookings` (Assigned labor).
+* `bookings` hasMany `parts` through pivot table `booking_part` (Tracking quantity and parts unit price at the time of invoice generation).
+* `bookings` hasOne `invoices` (1-to-1 invoicing status).
+* `activity_logs` belongsTo `users` (Tracking audit operators).
