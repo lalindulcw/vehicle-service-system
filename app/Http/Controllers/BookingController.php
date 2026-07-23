@@ -62,7 +62,10 @@ class BookingController extends Controller
         $sortDirection = $request->input('sort_direction', 'desc');
         $query->orderBy($sortField, $sortDirection);
 
-        $bookings = $query->paginate(10)->withQueryString();
+        $bookings = $query->paginate(10)->through(function ($booking) {
+            $booking->scheduled_at_formatted = $booking->scheduled_at->format('Y-m-d H:i:s');
+            return $booking;
+        })->withQueryString();
 
         // Metadata for dropdowns
         $customers = Customer::select('id', 'name')->get();

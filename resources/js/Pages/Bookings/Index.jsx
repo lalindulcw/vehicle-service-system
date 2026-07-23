@@ -78,7 +78,7 @@ export default function Index({ bookings, customers, vehicles, mechanics, parts,
             customer_id: booking.customer_id,
             vehicle_id: booking.vehicle_id,
             mechanic_id: booking.mechanic_id || '',
-            scheduled_at: booking.scheduled_at.replace(' ', 'T').substring(0, 16), // format to datetime-local
+            scheduled_at: (booking.scheduled_at_formatted || booking.scheduled_at).replace(' ', 'T').substring(0, 16), // format to datetime-local
             status: booking.status,
             labor_cost: booking.labor_cost,
             notes: booking.notes || '',
@@ -354,7 +354,7 @@ export default function Index({ bookings, customers, vehicles, mechanics, parts,
                                                 <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                                                     <Clock className="h-4 w-4 text-indigo-500" />
                                                     <span>
-                                                        {new Date(booking.scheduled_at).toLocaleString('en-LK', {
+                                                        {new Date(booking.scheduled_at_formatted ? booking.scheduled_at_formatted.replace(' ', 'T') : booking.scheduled_at).toLocaleString('en-LK', {
                                                             month: 'short',
                                                             day: 'numeric',
                                                             hour: '2-digit',
@@ -524,7 +524,7 @@ export default function Index({ bookings, customers, vehicles, mechanics, parts,
                                                 <td className="py-4 pl-6 font-semibold">
                                                     <div className="flex items-center gap-1.5">
                                                         <Clock className="h-4 w-4 text-indigo-500" />
-                                                        {new Date(booking.scheduled_at).toLocaleString('en-LK', {
+                                                        {new Date(booking.scheduled_at_formatted ? booking.scheduled_at_formatted.replace(' ', 'T') : booking.scheduled_at).toLocaleString('en-LK', {
                                                             month: 'short',
                                                             day: 'numeric',
                                                             hour: '2-digit',
