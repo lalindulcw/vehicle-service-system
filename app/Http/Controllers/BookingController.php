@@ -77,6 +77,12 @@ class BookingController extends Controller
             'mechanics' => $mechanics,
             'parts' => $parts,
             'filters' => $request->only(['search', 'status', 'sort_field', 'sort_direction']),
+            'stats' => [
+                'total' => Booking::count(),
+                'pending' => Booking::where('status', 'pending')->count(),
+                'in_progress' => Booking::where('status', 'in_progress')->count(),
+                'completed' => Booking::where('status', 'completed')->count(),
+            ]
         ]);
     }
 
