@@ -1,62 +1,57 @@
-# Vehicle Service Management System (VMS Pro)
+# Vehicle Service Management System
 
-A premium, full-stack vehicle service center management web application. Built using Laravel 13, Inertia.js (React), and Tailwind CSS. The system utilizes role-based access control (RBAC), database transaction boundaries, local rule-based AI diagnostics, and a variety of bonus features to deliver a complete garage operations suite.
-
----
-
-## 🚀 Key Features
-
-### 1. Functional Core
-* **Authentication & RBAC:** Multi-role user guards (Admin, Service Advisor, Mechanic) using Spatie Laravel Permission.
-* **Customer Management:** Full customer CRUD with responsive grid/list displays and live searching.
-* **Vehicle Management:** Full vehicle CRUD mapped to owners with VIN, mileage, and specification fields.
-* **Mechanic Scheduler:** Mechanic management and service allocations mapped to specializations.
-* **Service Bookings & Job Cards:** Timezone-safe calendar scheduling, parts assignment, and mechanic double-booking conflict preventions.
-* **Inventory Control:** Spare parts list with automatic stock deductions upon job completion and low stock threshold alarms.
-* **Billing & Invoices:** Sequential `INV-YYYY-XXXX` invoice number generation, labor + parts math calculation, and printable invoice sheets.
-* **Metrics Dashboard:** 4-card statistics, dynamic SVG revenue chart, low stock progress bars, and upcoming schedules list.
-
-### 2. AI Diagnostics Engine
-* **AI Service Advisor:** Processes natural language customer complaints (e.g., "My tyre is flat" or "steering click when turning") and maps them to faults, suggested services, costs, and recommends spare parts from inventory.
-
-### 3. Extra Credit / Bonus Features
-* **System Audit Trail:** Admin-only Activity Log registering all user operations and database model adjustments with JSON payload details.
-* **Interactive Calendar:** Timezone-safe monthly grid scheduler with quick modal event details.
-* **PDF / Print Invoice:** Print-friendly CSS media stylesheet to print or export invoices as clean A4 receipts.
-* **Automated Tests:** 27 feature and unit tests validating access controls, scheduling conflicts, and stock rules.
-* **Docker Containerization:** Ready-to-run `Dockerfile` and `docker-compose.yml` configs.
+A full-stack web application designed to manage daily operations at a vehicle service center. Built using Laravel 13, Inertia.js (React), and Tailwind CSS. The system handles customer details, vehicle records, service bookings, mechanic scheduling, parts inventory, and invoicing, with secure role-based access control.
 
 ---
 
 ## 🛠️ Technology Stack
 * **Backend:** Laravel 13 (PHP 8.2+)
 * **Frontend:** Inertia.js + React 18
-* **Styling:** Tailwind CSS (Vanilla responsive layout styling)
-* **Database:** MySQL / PostgreSQL
-* **Authorization:** Spatie Laravel Permission
-* **Testing:** PHPUnit / Pest
+* **Styling:** Tailwind CSS
+* **Database:** MySQL
+* **Access Control:** Spatie Laravel Permission
+* **Testing:** PHPUnit
 
 ---
 
-## 📦 Setup & Installation Instructions
+## 📦 Features Checklist
 
-Follow these steps to run the application locally on your computer:
+* **Authentication & Authorization:** Secure Login/Logout with role protection (Admin, Service Advisor, Mechanic).
+* **Customer Management:** CRUD operations for managing customer contact information.
+* **Vehicle Records:** CRUD operations linked to customers (Registration No, Make, Model, Year, VIN, Mileage).
+* **Mechanic Database:** Management of mechanic staff, employee IDs, and their technical specializations.
+* **Service Bookings & Job Cards:** Schedule service appointments with real-time double-booking validation for mechanics. Supports list/grid views and status updates (Pending, In Progress, Completed, Cancelled).
+* **Inventory Tracking:** Spare parts stock levels with auto-deduction when a service job is marked as Completed. Warning alerts show when stock drops below thresholds.
+* **Billing & Invoices:** Automatic invoice generation for completed bookings. Sums up labor + parts costs, generates sequential invoice numbers, and processes cash/card/bank payments. Features print-ready receipts.
+* **Metrics Dashboard:** Displays active jobs, today's appointments, low stock alerts, and a daily revenue summary with a 7-day trend chart.
+* **AI Service Advisor:** Translates natural language customer complaints (like "My tyre is flat" or "steering click when turning") into diagnosed faults, recommended services, estimated labor costs, and suggestions for stock parts.
+* **Audit Trail / Activity Log:** Records all user actions (creations, edits, deletions, payments) for administrator review.
 
-### 1. Clone & Install Dependencies
+---
+
+## 🚀 Setup & Installation Instructions
+
+Follow these steps to run the application locally:
+
+### 1. Install Dependencies
 ```bash
 # Clone the repository
-git clone <repository-link>
+git clone <repository-url>
 cd vehicle-service-system
 
-# Install PHP Composer packages
+# Install PHP packages
 composer install
 
-# Install Node JS packages
+# Install NPM packages
 npm install
 ```
 
-### 2. Configure Environment File
-Create a copy of `.env.example` named `.env` and configure your database parameters:
+### 2. Database Configuration
+Create a `.env` file in the root directory by copying the example file:
+```bash
+cp .env.example .env
+```
+Open `.env` and set your MySQL database credentials:
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -66,71 +61,62 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 3. Setup Database Schema & Seeders
-Generate the application key, run migrations, and execute seeders to populate initial roles, admin profiles, and sample parts:
+### 3. Generate Keys & Run Migrations
+Run the migrations and seeders to create the tables, user roles, and sample data (default parts list, test accounts):
 ```bash
-# Generate app key
+# Generate application key
 php artisan key:generate
 
-# Run migrations and seed data
+# Run migrations and seed the database
 php artisan migrate:fresh --seed
 ```
 
-### 4. Seeded User Credentials (for Testing)
-Use the following profiles to log in and inspect different role capabilities:
-* **Administrator Profile:**
+### 4. Seeded Test Credentials
+Log in using these test profiles to review different dashboard views:
+* **Administrator:**
   * **Email:** `admin@example.com`
   * **Password:** `password`
-* **Service Advisor Profile:**
+* **Service Advisor:**
   * **Email:** `advisor@example.com`
   * **Password:** `password`
-* **Workshop Mechanic Profile:**
+* **Mechanic:**
   * **Email:** `mechanic@example.com`
   * **Password:** `password`
+* **Mechanic 2 (Engine Specialist):**
+  * **Email:** `sarah@example.com`
+  * **Password:** `password`
 
-### 5. Start Development Servers
-Run the Laravel artisan server and Node asset bundler concurrently:
+### 5. Run the Application
+Start the backend server and compile the assets:
 ```bash
-# Start backend server (runs on http://127.0.0.1:8000)
+# Start Laravel development server
 php artisan serve
 
-# Start frontend bundler
+# Compile Vite assets for development
 npm run dev
-# OR build production bundles
+
+# Or build for production
 npm run build
 ```
+Open `http://127.0.0.1:8000` in your web browser.
 
 ---
 
-## 🐳 Docker Deployment (Alternative Setup)
-If you have Docker installed, you can launch the entire stack (web app + database) with a single command:
+## 🐳 Docker Deployment (Optional)
+If you prefer Docker, you can start the application using Docker Compose:
 ```bash
-# Build and run containers
+# Start containers in the background
 docker-compose up -d --build
 
-# Run migrations and seed inside the container
+# Run migrations and seed data inside the container
 docker-compose exec app php artisan migrate:fresh --seed
 ```
-The application will be accessible at `http://localhost:8080`.
+Access the application at `http://localhost:8080`.
 
 ---
 
-## 🧪 Running Automated Tests
-Run the PHPUnit test suite to verify route protection, Spatie roles, booking conflict preventions, and stock rules:
+## 🧪 Testing
+Run the test suite to verify Spatie permissions, validation checks, and transaction safety:
 ```bash
 php artisan test
 ```
-*(All 27 automated feature and unit tests will run and pass successfully).*
-
----
-
-## 📂 Database Architecture & Relations
-The database is built on normalized relations to maintain data integrity:
-* `users` belongsToMany `roles` (Spatie permission schema).
-* `customers` hasMany `vehicles` (Owner mapping).
-* `customers` hasMany `bookings`.
-* `vehicles` hasMany `bookings` (Vehicle history).
-* `mechanics` hasMany `bookings` (Assigned labor).
-* `bookings` hasMany `parts` through pivot table `booking_part` (Tracking quantity and parts unit price at the time of invoice generation).
-* `bookings` hasOne `invoices` (1-to-1 invoicing status).
-* `activity_logs` belongsTo `users` (Tracking audit operators).
