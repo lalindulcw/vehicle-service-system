@@ -29,6 +29,25 @@ A full-stack web application designed to manage daily operations at a vehicle se
 
 ---
 
+## 📸 System Preview
+
+### 🏠 Guest Portal & Operations Dashboard
+| Guest Welcome Portal | Staff Operations Dashboard |
+| :---: | :---: |
+| ![Welcome Portal](public/screenshots/welcome.png) | ![Operations Dashboard](public/screenshots/dashboard.png) |
+
+### 📅 Calendar Scheduling & AI Diagnostics
+| Interactive Service Calendar | AI-Powered Diagnostic Advisor |
+| :---: | :---: |
+| ![Service Calendar](public/screenshots/calendar.png) | ![AI Advisor](public/screenshots/ai_advisor.png) |
+
+### 💼 Job Cards & Financial Invoicing
+| Service Bookings Queue | Billing & Invoice Generation |
+| :---: | :---: |
+| ![Service Bookings](public/screenshots/bookings.png) | ![Billing & Invoices](public/screenshots/billing.png) |
+
+---
+
 ## 🚀 Setup & Installation Instructions
 
 Follow these steps to run the application locally:
